@@ -7,6 +7,10 @@ import io.hhplus.tdd.point.UserPoint
 class FixtureUtil {
 
     companion object {
+
+        /**
+         * UserPoint Fixture 생성
+         */
         fun userPoint(
             id: Long = 1L,
             point: Long = 100L,
@@ -19,6 +23,9 @@ class FixtureUtil {
             )
         }
 
+        /**
+         * PointHistory Fixture 생성
+         */
         fun pointHistory(
             id: Long = 1L,
             userId: Long = 1L,

@@ -19,16 +19,21 @@ class PointService(
     }
 
     fun charge(userId: Long, amount: Long): UserPoint {
-        val currentUserPoint = userPointTable.selectById(userId)
-        val chargedUserPoint = userPointTable.insertOrUpdate(userId, currentUserPoint.point + amount)
+        val chargedUserPoint = UserPointLockManager.withLock(userId) {
+            val currentUserPoint = userPointTable.selectById(userId)
+            userPointTable.insertOrUpdate(userId, currentUserPoint.point + amount)
+        }
         pointHistoryTable.insert(userId, amount, TransactionType.CHARGE, System.currentTimeMillis())
         return chargedUserPoint
     }
 
     fun use(userId: Long, amount: Long): UserPoint {
-        val currentUserPoint = userPointTable.selectById(userId)
-        val usedUserPoint = userPointTable.insertOrUpdate(userId, currentUserPoint.point - amount)
+        val usedUserPoint = UserPointLockManager.withLock(userId) {
+            val currentUserPoint = userPointTable.selectById(userId)
+            userPointTable.insertOrUpdate(userId, currentUserPoint.point - amount)
+        }
         pointHistoryTable.insert(userId, amount, TransactionType.USE, System.currentTimeMillis())
+
         return usedUserPoint
     }
 
