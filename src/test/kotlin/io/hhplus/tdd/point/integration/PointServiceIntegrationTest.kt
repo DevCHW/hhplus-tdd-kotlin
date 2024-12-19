@@ -25,6 +25,9 @@ class PointServiceIntegrationTest(
     @Autowired private val pointHistoryTable: PointHistoryTable,
 ) {
 
+    /**
+     * 포인트 데이터를 리플렉션을 통해 각각의 테스트마다 초기화
+     */
     @AfterEach
     fun tearDown() {
         val userPointData = ReflectionTestUtils.getField(userPointTable, "table") as? MutableMap<*, *>
@@ -33,6 +36,9 @@ class PointServiceIntegrationTest(
         pointHistoryData?.clear()
     }
 
+    /**
+     * 유저 포인트 조회 기능 테스트
+     */
     @Test
     fun `유저의 포인트를 조회할 수 있다`() {
         // given
@@ -47,6 +53,9 @@ class PointServiceIntegrationTest(
         assertThat(result.point).isEqualTo(userPoint.point)
     }
 
+    /**
+     * 유저 포인트 변경 이력 조회 기능 테스트
+     */
     @Test
     fun `유저의 포인트 변경 이력을 조회할 수 있다`() {
         // given
@@ -80,10 +89,16 @@ class PointServiceIntegrationTest(
             )
     }
 
+    /**
+     * 유저 포인트 충전 테스트
+     */
     @Nested
     @DisplayName("유저 포인트 충전 테스트")
     inner class Charge {
 
+        /**
+         * 유저 포인트 충전 기능 테스트
+         */
         @Test
         fun `유저의 포인트를 충전할 수 있다`() {
             // given
@@ -98,6 +113,9 @@ class PointServiceIntegrationTest(
             assertThat(result.point).isEqualTo(amount)
         }
 
+        /**
+         * 포인트 충전 시 포인트 충전 내역 저장 테스트
+         */
         @Test
         fun `유저의 포인트 충전시 포인트 충전 내역이 저장되어야 한다`() {
             // given
@@ -117,6 +135,9 @@ class PointServiceIntegrationTest(
                 )
         }
 
+        /**
+         * 포인트 충전 동시성 테스트
+         */
         @Test
         fun `하나의 유저에게 동시에 포인트 충전 요청이 들어오더라도 오차 없이 충전되어야 한다`() {
             // given
@@ -138,6 +159,10 @@ class PointServiceIntegrationTest(
     @Nested
     @DisplayName("유저 포인트 사용 테스트")
     inner class Use {
+
+        /**
+         * 유저 포인트 사용 기능 테스트
+         */
         @Test
         fun `유저의 포인트를 사용할 수 있다`() {
             // given
@@ -153,6 +178,9 @@ class PointServiceIntegrationTest(
             assertThat(result.point).isEqualTo(userPoint.point - useAmount)
         }
 
+        /**
+         * 유저 포인트 사용 시 사용 내역 저장 테스트
+         */
         @Test
         fun `유저의 포인트 사용 시 포인트 사용 내역이 저장되어야 한다`() {
             // given
@@ -173,6 +201,9 @@ class PointServiceIntegrationTest(
                 )
         }
 
+        /**
+         * 유저 포인트 사용 동시성 테스트
+         */
         @Test
         fun `하나의 유저에게 동시에 포인트 사용 요청이 들어오더라도 오차 없이 사용되어야 한다`() {
             // given
@@ -193,6 +224,9 @@ class PointServiceIntegrationTest(
         }
     }
 
+    /**
+     * 동시성 테스트 유틸 메소드
+     */
     private fun executeConcurrently(count: Int, task: Runnable) {
         val executorService: ExecutorService = Executors.newFixedThreadPool(count)
         val futures = (1..count).map {

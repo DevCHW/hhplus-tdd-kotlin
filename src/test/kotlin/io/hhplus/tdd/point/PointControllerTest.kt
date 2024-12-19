@@ -22,6 +22,9 @@ class PointControllerTest {
     @MockBean
     private lateinit var pointService: PointService
 
+    /**
+     * 포인트 조회 API 단위 테스트
+     */
     @Test
     fun `포인트 조회 API`() {
         // given
@@ -40,6 +43,9 @@ class PointControllerTest {
             .andExpect(jsonPath("updateMillis").value(userPoint.updateMillis))
     }
 
+    /**
+     * 포인트 내역 조회 API 단위 테스트
+     */
     @Test
     fun `포인트 내역 조회 API`() {
         // given
@@ -67,6 +73,9 @@ class PointControllerTest {
             .andExpect(jsonPath("[1].timeMillis").value(pointHistory2.timeMillis))
     }
 
+    /**
+     * 포인트 충전 API 단위 테스트
+     */
     @Test
     fun `포인트 충전 API`() {
         // given
@@ -86,6 +95,9 @@ class PointControllerTest {
             .andExpect(jsonPath("updateMillis").value(userPoint.updateMillis))
     }
 
+    /**
+     * 포인트 사용 API 단위 테스트
+     */
     @Test
     fun `포인트 사용 API`() {
         // given

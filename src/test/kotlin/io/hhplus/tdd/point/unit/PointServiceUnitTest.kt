@@ -28,6 +28,9 @@ class PointServiceUnitTest {
         pointService = PointService(pointHistoryTable, userPointTable)
     }
 
+    /**
+     * 유저 포인트 조회 단위 테스트
+     */
     @Test
     fun `유저의 포인트를 조회할 수 있다`() {
         // given
@@ -43,6 +46,9 @@ class PointServiceUnitTest {
         assertThat(result.point).isEqualTo(userPoint.point)
     }
 
+    /**
+     * 유저 포인트 변경 이력 조회 단위 테스트
+     */
     @Test
     fun `유저의 포인트 변경 이력을 조회할 수 있다`() {
         // given
@@ -73,6 +79,9 @@ class PointServiceUnitTest {
             )
     }
 
+    /**
+     * 유저 포인트 충전 단위 테스트
+     */
     @Test
     fun `유저의 포인트를 충전할 수 있다`() {
         // given
@@ -95,6 +104,9 @@ class PointServiceUnitTest {
         assertThat(result.point).isEqualTo(beforeUserPoint.point + amount)
     }
 
+    /**
+     * 유저 포인트 사용 단위 테스트
+     */
     @Test
     fun `유저의 포인트를 사용할 수 있다`() {
         // given
