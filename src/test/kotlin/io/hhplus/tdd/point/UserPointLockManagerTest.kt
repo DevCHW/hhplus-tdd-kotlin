@@ -23,7 +23,8 @@ class UserPointLockManagerTest {
 
         // when
         val startTime = System.currentTimeMillis()
-        executeConcurrently(2, task) // 동시 2번 실행
+
+        executeConcurrently1(2, task) // 동시 2번 실행
         val endTime = System.currentTimeMillis()
 
         // then
@@ -37,20 +38,22 @@ class UserPointLockManagerTest {
     @Test
     fun `다른 유저의 경우 잠금 매니저에 관계없이 동시 실행이 가능해야 한다`() {
         // given
-        val task = { Thread.sleep(1000) }
+        val sleep = {
+            Thread.sleep(1000)
+        }
+
+        val task1 = {
+            val userId = 1L
+            UserPointLockManager.withLock(userId, sleep)
+        }
+        val task2 = {
+            val userId = 2L
+            UserPointLockManager.withLock(userId, sleep)
+        }
 
         // when
         val startTime = System.currentTimeMillis()
-        val threads = (0 until 2).map { idx ->
-            Thread {
-                val userId = if (idx % 2 == 0) 1L else 2L // 다른 유저 ID
-                UserPointLockManager.withLock(userId, task)
-            }
-        }
-
-        threads.forEach { it.start() }
-        threads.forEach { it.join() }
-
+        executeConcurrently2(task1, task2)
         val endTime = System.currentTimeMillis()
 
         // then
@@ -61,7 +64,7 @@ class UserPointLockManagerTest {
     /**
      * 동시성 테스트 유틸 메소드
      */
-    private fun executeConcurrently(count: Int, task: Runnable) {
+    private fun executeConcurrently1(count: Int, task: Runnable) {
         val executorService: ExecutorService = Executors.newFixedThreadPool(count)
         val futures = (1..count).map {
             CompletableFuture.runAsync(task, executorService)
@@ -69,6 +72,18 @@ class UserPointLockManagerTest {
 
         CompletableFuture.allOf(*futures.toTypedArray()).join()
 
+        executorService.shutdown()
+    }
+
+    /**
+     * 동시성 테스트 유틸 메소드
+     */
+    private fun executeConcurrently2(vararg tasks: Runnable) {
+        val executorService: ExecutorService = Executors.newFixedThreadPool(tasks.size)
+        val futures = tasks.map {task ->
+            CompletableFuture.runAsync(task, executorService)
+        }
+        CompletableFuture.allOf(*futures.toTypedArray()).join()
         executorService.shutdown()
     }
 
